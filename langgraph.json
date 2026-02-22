@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "brain_agent": "./brain.py:workflow"
+  },
+  "env": ".env"
+}

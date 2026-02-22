@@ -1,0 +1,14 @@
+langchain
+langchain-core
+langchain-google-genai
+langgraph
+langchain-community
+langgraph-checkpoint-sqlite
+streamlit
+pydantic
+python-dotenv
+sqlalchemy
+pillow
+pypdf
+pandas
+chromadb

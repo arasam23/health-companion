@@ -1,0 +1,6 @@
+.venv/
+.env
+health_companion.db
+__pycache__/
+chroma_db/
+*.png
