@@ -12,7 +12,7 @@ from langchain_core.output_parsers import StrOutputParser
 load_dotenv()
 
 # We will use gemini-3.0-pro-exp (or whichever equivalent the user can access)
-LLM_MODEL = "gemini-2.5-pro" 
+LLM_MODEL = os.getenv("HEALTH_LLM_MODEL", "gemini-pro-latest")
 EMBEDDING_MODEL = "models/gemini-embedding-001"
 
 llm = ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0.2)

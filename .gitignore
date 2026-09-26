@@ -4,3 +4,6 @@ health_companion.db
 __pycache__/
 chroma_db/
 *.png
+health_companion_graph.db*
+.streamlit/secrets.toml
+app.log

@@ -11,7 +11,7 @@ load_dotenv()
 
 # We will use gemini-3.0-pro-exp (or whichever equivalent the user can access via API key)
 # For now, default to gemini-2.5-pro or 1.5 if 3.0 preview isn't widely available in the SDK yet.
-LLM_MODEL = "gemini-2.5-pro" # Update to 3.0 if available in your GCP/AI Studio project
+LLM_MODEL = os.getenv("HEALTH_LLM_MODEL", "gemini-pro-latest")
 
 llm = ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0)
 

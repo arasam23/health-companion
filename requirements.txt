@@ -12,3 +12,4 @@ pillow
 pypdf
 pandas
 chromadb
+langchain-chroma

@@ -1,7 +1,8 @@
 import os
 from dotenv import load_dotenv
-from typing import TypedDict, Optional, List, Any
+from typing import Annotated, TypedDict, Optional, List, Any
 from langgraph.graph import StateGraph, END
+from langgraph.graph.message import add_messages
 from langgraph.checkpoint.sqlite import SqliteSaver
 import sqlite3
 from pydantic import BaseModel, Field
@@ -10,18 +11,19 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
 # Import our agents
+from db import get_connection
 from logger import extract_biometrics, extract_meal, log_biometrics, log_meal
 from strategist import generate_strategy
 
 load_dotenv()
 
 # Setup GenAI model
-LLM_MODEL = "gemini-2.5-pro"
+LLM_MODEL = os.getenv("HEALTH_LLM_MODEL", "gemini-pro-latest")
 llm = ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0)
 
 # --- Define the State Schema ---
 class AgentState(TypedDict):
-    messages: List[BaseMessage]
+    messages: Annotated[List[BaseMessage], add_messages]
     image_paths: List[str]
     intent: Optional[str] # "LOG_BIOMETRICS", "LOG_MEAL", "GET_STRATEGY", "CHAT", "SET_GOAL"
     recent_logs: List[str]
@@ -136,7 +138,7 @@ def set_goal_node(state: AgentState) -> dict:
     
     # We can ask the LLM to summarize the goal nicely before saving
     summary_prompt = f"Summarize the core health goal the user is trying to set based on this input: '{user_query}'"
-    goal_summary = llm.invoke([HumanMessage(content=summary_prompt)]).content
+    goal_summary = llm.invoke([HumanMessage(content=summary_prompt)]).text
     
     save_goal(goal_summary)
     
@@ -162,7 +164,8 @@ def general_chat_node(state: AgentState) -> dict:
     payload = [SystemMessage(content=system_prompt)] + chat_history
     
     response = llm.invoke(payload)
-    return {"messages": [response]}
+    # Newer Gemini models return content as a list of parts; normalize to plain text.
+    return {"messages": [AIMessage(content=response.text)]}
 
 def brain_review_node(state: AgentState) -> dict:
     """Evaluates the logged meal against the Ayurvedic strategy."""
